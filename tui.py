@@ -1,4 +1,5 @@
 import pytermgui as ptg
+from hangman import Hangman
 
 CONFIG = """
 config:
@@ -38,7 +39,7 @@ class TUI:
                 self.get_game(mgr)
             if self.players == 0:
                 self.get_players(mgr)
-            self.start(mgr)
+                
 
     def get_game(self, mgr):
         game_win = ptg.Window(
@@ -72,14 +73,22 @@ class TUI:
     def set_game(self, mgr, game_choice, win):
         self.game = game_choice
         mgr.remove(win)
+        if (self.game != 0 and self.players != 0):
+            self.start(mgr)
 
     def set_players(self, mgr, player_count, win):
         self.players = player_count
         mgr.remove(win)
+        if (self.game != 0 and self.players != 0):
+            self.start(mgr)
 
     def start(self, mgr):
-        print(f"Starting game {self.game} with {self.players} players!")
-        #self.stop(mgr)
+        if self.game == 2:
+            hangman_game = Hangman(self.players)
+            hangman_game.main(mgr)
+        else:
+            print("Other games not implemented yet!")
+
 
     def stop(self, mgr):
         mgr.stop()

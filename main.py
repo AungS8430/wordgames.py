@@ -41,4 +41,5 @@ class Wordgames:
 
 # Instantiate and run the game
 game = Wordgames()
-game.auto()
+game.select_game(2)
+game.start()

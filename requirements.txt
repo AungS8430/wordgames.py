@@ -1,0 +1,6 @@
+pyenchant==3.2.2
+PyTermGUI==7.7.2
+PyYAML==6.0.2
+typing_extensions==4.12.2
+wcwidth==0.2.13
+wonderwords==2.2.0
