@@ -197,10 +197,7 @@ class Hangman:
                         self.get_word((host + 1) % self.players + 1, mgr)
                     else:
                         mgr.remove(win)
-                        if (player + 1) % self.players == host:
-                            self.get_guesses(mgr, host, (player + 2) % self.players, stage, correct_word, o_word)
-                        else:
-                            self.get_guesses(mgr, host, (player + 1) % self.players, stage, correct_word, o_word)
+                        self.get_guesses(mgr, host, player, stage, correct_word, o_word)
                 else:
                     self.scores[player] -= 5
                     scoreboard.value = "\n".join(f"Player {i+1} Score: {score}" for i, score in enumerate(self.scores))
