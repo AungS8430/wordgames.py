@@ -70,7 +70,10 @@ class Hangman:
 
 
     def main(self, mgr):
-        self.get_rounds(mgr)
+        if self.players < 2:
+            self.player_error(mgr)
+        else:
+            self.get_rounds(mgr)
 
     def get_rounds(self, mgr):
         round_win = ptg.Window(
@@ -102,15 +105,18 @@ class Hangman:
         return curr
 
     def get_word(self, player, mgr):
+        if self.curr_round > self.rounds:
+            self.show_score(mgr)
+            return
         d = enchant.Dict("en_US")
         error_label = ptg.Label("")
         scoreboard = ptg.Label("\n".join(f"Player {i+1} Score: {score}" for i, score in enumerate(self.scores)))
 
         def submit_word(mgr, win, input_field):
-            user_word = input_field.value
+            user_word = input_field.value.lower().strip()
             if user_word == "":
                 return
-            elif d.check(user_word):
+            elif d.check(user_word) and len(user_word) > 1:
                 mgr.remove(win)
                 self.get_guesses(mgr, player, (player + 1) % self.players, 0, user_word.lower(), "_" * len(user_word))
             else:
@@ -141,13 +147,14 @@ class Hangman:
 
 
     def get_guesses(self, mgr, host, player, stage, correct_word, o_word):
+        word_label = ptg.Label(o_word)
         error_label = ptg.Label("")
         hangman_status = ptg.Label(hangman_stages[stage])
         scoreboard = ptg.Label("\n".join(f"Player {i+1} Score: {score}" for i, score in enumerate(self.scores)))
 
         def submit_guess(mgr, win, input_field):
             nonlocal o_word
-            user_guess = input_field.value
+            user_guess = input_field.value.lower().strip()
             if user_guess == "" or len(user_guess) > 1:
                 error_label.value = "Invalid guess."
                 time.sleep(1)
@@ -166,6 +173,7 @@ class Hangman:
                     for i in range(len(correct_word)):
                         if correct_word[i] == user_guess:
                             o_word = o_word[:i] + user_guess + o_word[i+1:]
+                    word_label.value = o_word
                     hangman_status.value = hangman_stages[stage]
                     error_label.value = "Correct guess."
                     time.sleep(1)
@@ -207,16 +215,14 @@ class Hangman:
                         if (player + 1) % self.players == host:
                             self.get_guesses(mgr, host, (player + 2) % self.players, min(stage + 1, len(hangman_stages) - 1), correct_word, o_word)
                         else:
-                            self.get_guesses(mgr, host, (player + 1) % self.players, min(stage + 1, len(hangman_stages) - 1), correct_word, o_word)
-                if self.curr_round == self.rounds:
-                    mgr.remove(win)
-                    self.show_score(mgr)                
+                            self.get_guesses(mgr, host, (player + 1) % self.players, min(stage + 1, len(hangman_stages) - 1), correct_word, o_word)     
 
         input_field = ptg.InputField("", prompt="Enter a guess: ")
         guess_win = ptg.Window(
             f"[210 bold]Player {player + 1}",
             ptg.Splitter(
                 ptg.Container(
+                    word_label,
                     hangman_status,
                     scoreboard
                 ),
@@ -225,7 +231,6 @@ class Hangman:
                     error_label,
                     ptg.Button("Submit", lambda *_: submit_guess(mgr, guess_win, input_field)),
                     width=60,
-                    height=5
                 )
             ),
             width=80,
@@ -234,13 +239,31 @@ class Hangman:
         add_window(mgr, guess_win)
 
     def show_score(self, mgr):
-        scoreboard = ptg.Label("\n".join(f"Player {i+1} Score: {score}" for i, score in enumerate(self.scores)))
+        max_score = max(self.scores)
+        winners = [i + 1 for i, score in enumerate(self.scores) if score == max_score]
+        if len(winners) == 1:
+            scoreboard = ptg.Label(f"Congratulations, Player {winners[0]} wins with a score of {max_score}.")
+        else:
+            scoreboard = ptg.Label(f"It's a draw between {', '.join([str(i) for i in winners])} with a score of {max_score}.")
         score_win = ptg.Window(
             "Game Over",
             scoreboard,
-            ptg.Button("Quit", lambda *_: exit()),
+            ptg.Button("Quit", lambda *_: mgr.stop()),
             width=80,
             height=6
         )
         add_window(mgr, score_win)
 
+
+    def player_error(self, mgr):
+        error_win = ptg.Window(
+            "Error",
+            "This game requires at least 2 players.",
+            ptg.Button("Quit", lambda *_: exit()),
+            width=80,
+            height=6
+        )
+        add_window(mgr, error_win)
+
+    def get_score(self):
+        return self.scores

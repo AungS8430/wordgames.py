@@ -29,6 +29,7 @@ class TUI:
     def __init__(self, game, players):
         self.game = game
         self.players = players
+        self.scores = []
 
     def main(self):
         with ptg.YamlLoader() as loader:
@@ -86,9 +87,9 @@ class TUI:
         if self.game == 2:
             hangman_game = Hangman(self.players)
             hangman_game.main(mgr)
+            self.scores = hangman_game.get_score()
         else:
             print("Other games not implemented yet!")
 
-
-    def stop(self, mgr):
-        mgr.stop()
+    def get_score(self):
+        return self.scores
