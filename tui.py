@@ -1,5 +1,6 @@
 import pytermgui as ptg
 from hangman import Hangman
+from wordle import Wordle
 
 CONFIG = """
 config:
@@ -84,6 +85,10 @@ class TUI:
             self.start(mgr)
 
     def start(self, mgr):
+        if self.game == 1:
+            wordle_game = Wordle(self.players)
+            wordle_game.start(mgr)
+            #self.scores = wordle_game.get_score()
         if self.game == 2:
             hangman_game = Hangman(self.players)
             hangman_game.main(mgr)
