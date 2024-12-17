@@ -51,7 +51,7 @@ class Wordle:
                 
 
     def play_stage(self, mgr):
-        if self.curr_stage > 5:
+        if self.curr_stage == 5:
             return self.show_score(mgr, -1)
         else:
             if self.curr_stage > 0:
