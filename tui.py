@@ -41,6 +41,8 @@ class TUI:
                 self.get_game(mgr)
             if self.players == 0:
                 self.get_players(mgr)
+            if (self.game != 0 and self.players != 0):
+                self.start(mgr)
                 
 
     def get_game(self, mgr):

@@ -8,14 +8,14 @@ class Wordgames:
         self.scores = []
 
     def select_game(self, game):
-        if 0 < game <= 3:
+        if 0 <= game <= 2:
             self.game = game
         else:
             print("Invalid game selection. Please choose a valid game.")
             return 1
 
     def set_players(self, n_players):
-        if 0 < n_players < 3:
+        if 0 <= n_players <= 3:
             self.n_players = n_players
         else:
             print("Invalid number of players. Please choose between 1 and 3.")
